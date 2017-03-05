@@ -52,7 +52,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-![alt text](http://i.imgur.com/1E08nsU.gifv "http://i.imgur.com/1E08nsU.gifv")
+![alt text](http://i.imgur.com/1E08nsU.gif )
 
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
