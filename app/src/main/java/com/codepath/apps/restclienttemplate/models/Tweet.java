@@ -5,6 +5,7 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 import org.scribe.builder.api.TwitterApi;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 /**
  * Created by Quietus on 2017/3/3.
  */
-
+@Parcel
 public class Tweet {
     private String body;
     private long uid;
@@ -35,6 +36,9 @@ public class Tweet {
 
     public User getUser() {
         return user;
+    }
+    public Tweet(){
+
     }
 
     public static Tweet fromJSON(JSONObject jsonObject){

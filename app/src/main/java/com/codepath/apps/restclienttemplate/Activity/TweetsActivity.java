@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -112,6 +113,16 @@ public class TweetsActivity extends AppCompatActivity {
 
                 });
                 return true;
+            }
+        });
+        // listview select action
+        tweetsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(TweetsActivity.this, detailActivity.class);
+                tweets = tweetsAdapter.getItem(position);
+                intent.putExtra("tweet", Parcels.wrap(tweets));
+                startActivity(intent);
             }
         });
 
