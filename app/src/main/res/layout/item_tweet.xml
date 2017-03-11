@@ -33,6 +33,8 @@
         android:id="@+id/tvBody"
         android:text="New Text"
         android:autoLink="all"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvUserName"

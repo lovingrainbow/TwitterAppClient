@@ -14,22 +14,37 @@ import org.parceler.Parcels;
 
 import cz.msebera.android.httpclient.Header;
 
-/**
- * Created by Quietus on 2017/3/10.
- */
 
 public class UserTimelineFragment extends TweetsListFragment {
     private TwitterClient client;
-
+    private User user;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // init client
         client = TwitterApplication.getRestClient();    //singleton client
-        User user = (User) Parcels.unwrap(getArguments().getParcelable("user"));
+        user = (User) Parcels.unwrap(getArguments().getParcelable("user"));
         // get first pop
         client.getUserTimeline(null, user,new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                Log.d("DEBUG", response.toString());
+                addAll(Tweet.froJSONArray(response));
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Log.e("ERROR", errorResponse.toString());
+            }
+        });
+
+    }
+
+    @Override
+    protected void populateTimeline(long maxId) {
+        // get first pop
+        client.getUserTimeline(maxId, user,new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("DEBUG", response.toString());
@@ -53,4 +68,6 @@ public class UserTimelineFragment extends TweetsListFragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+
 }

@@ -32,12 +32,12 @@ public class ProfileActivity extends AppCompatActivity {
         //  Actionbar change title
         getSupportActionBar().setTitle("@" + myProfile.getScreenName());
         //  create usertimeline fragment
-        if (savedInstanceState == null){
+//        if (savedInstanceState == null){
             UserTimelineFragment fragment = UserTimelineFragment.newInstance(myProfile);
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.flContainer, fragment);
             ft.commit();
-        }
+//        }
         //  display user time line fragment within this activity
 
         setView();

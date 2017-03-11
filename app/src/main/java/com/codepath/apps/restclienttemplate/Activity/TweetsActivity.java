@@ -14,12 +14,14 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 
+import com.codepath.apps.restclienttemplate.Adapter.SmartFragmentStatePagerAdapter;
 import com.codepath.apps.restclienttemplate.R;
 
 import com.codepath.apps.restclienttemplate.TwitterApplication;
 import com.codepath.apps.restclienttemplate.TwitterClient;
 import com.codepath.apps.restclienttemplate.fragments.HomeTimelineFragment;
 import com.codepath.apps.restclienttemplate.fragments.MentionsTimelineFragment;
+import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -33,7 +35,9 @@ public class TweetsActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE = 20;
     private TwitterClient client;
-//    private Tweet tweets;
+    private ViewPager viewPager;
+    private Tweet tweets;
+
 //    private SwipeRefreshLayout swipeContainer;
     private User myProfile;
 //    private TweetsListFragment fragmentTweetsList;
@@ -45,7 +49,7 @@ public class TweetsActivity extends AppCompatActivity {
 
 
         //  Get the viewpager
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
         //  set the viewpager adapter for the pager
         viewPager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager()));
         //  find the sliding tabstrip
@@ -68,34 +72,6 @@ public class TweetsActivity extends AppCompatActivity {
 
 
 
-        // set listview onscrolllistener
-//
-//        tweetsListView.setOnScrollListener(new EndlessScrollListener() {
-//
-//            private long getMaxId(int totalItemsCount){
-//
-//                try{
-//                    long max_id = aTweets.get(totalItemsCount - 1).getUid() - 1;
-//                    return max_id;
-//                }catch (NullPointerException e){
-//                    e.printStackTrace();
-//                    return 0;
-//                }
-//
-//            }
-//            @Override
-//            public boolean onLoadMore(int page, int totalItemCount) {
-//                client.getHomeTimeline(getMaxId(totalItemCount), new JsonHttpResponseHandler(){
-//                    @Override
-//                    public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-//                        tweetsAdapter.addAll(Tweet.froJSONArray(response));
-//                        tweetsAdapter.notifyDataSetChanged();
-//                    }
-//
-//                });
-//                return true;
-//            }
-//        });
 //        // listview select action
 //        tweetsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
@@ -151,9 +127,9 @@ public class TweetsActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.menuCompose:
                 // open new activity
-//                Intent intent = new Intent(this, ComposeActivity.class);
-//                intent.putExtra("user", Parcels.wrap(myProfile));
-//                startActivityForResult(intent, REQUEST_CODE);
+                Intent i = new Intent(this, ComposeActivity.class);
+                i.putExtra("myfile", Parcels.wrap(myProfile));
+                startActivityForResult(i, REQUEST_CODE);
                 return true;
             case R.id.menuProfile:
                 Intent intent = new Intent(this, ProfileActivity.class);
@@ -166,7 +142,7 @@ public class TweetsActivity extends AppCompatActivity {
 
     }
     //  return the order of the fragments in the view paper
-    public class TweetsPagerAdapter extends FragmentPagerAdapter{
+    public class TweetsPagerAdapter extends SmartFragmentStatePagerAdapter{
         private String tabTitles[] = {"Home", "Mentions"};
         //  Adapter gets the manager insert or remove fragment from activity
         public TweetsPagerAdapter(FragmentManager fm){
@@ -194,19 +170,20 @@ public class TweetsActivity extends AppCompatActivity {
             return tabTitles.length;
         }
     }
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE){
-//            String body = data.getExtras().getString("body");
-//            client.postTweet(body, new JsonHttpResponseHandler(){
-//                @Override
-//                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                    tweets = Tweet.fromJSON(response);
-//                    tweetsAdapter.insert(tweets, 0);
-//                    tweetsAdapter.notifyDataSetChanged();
-//                }
-//            });
-//        }
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE){
+            String body = data.getExtras().getString("body");
+            client.postTweet(body, new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    tweets = Tweet.fromJSON(response);
+                    HomeTimelineFragment fragment = (HomeTimelineFragment)
+                            ((TweetsPagerAdapter)viewPager.getAdapter()).getRegisteredFragment(0);
+                    fragment.insert(tweets, 0);
+                }
+            });
+        }
+    }
 }
 

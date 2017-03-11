@@ -81,7 +81,7 @@ public class ComposeActivity extends AppCompatActivity {
             }
         });
         twitterClient = TwitterApplication.getRestClient();
-        myProfile = (User) Parcels.unwrap(getIntent().getParcelableExtra("user"));
+        myProfile = (User) Parcels.unwrap(getIntent().getParcelableExtra("myfile"));
         // set myprofile data
         tvName.setText(myProfile.getName());
         Glide.with(this).load(myProfile.getProfileImageUrl()).into(ivUserImage);
