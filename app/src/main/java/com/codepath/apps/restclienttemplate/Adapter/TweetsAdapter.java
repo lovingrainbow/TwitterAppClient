@@ -3,6 +3,7 @@ package com.codepath.apps.restclienttemplate.Adapter;
 import android.content.Context;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 import com.codepath.apps.restclienttemplate.Activity.ProfileActivity;
+import com.codepath.apps.restclienttemplate.PatternEditableBuilder;
 import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
@@ -23,6 +25,7 @@ import com.codepath.apps.restclienttemplate.models.Tweet;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 
 public class TweetsAdapter extends ArrayAdapter<Tweet> {
@@ -49,6 +52,15 @@ public class TweetsAdapter extends ArrayAdapter<Tweet> {
         }
         viewHolder.tvUserName.setText(tweet.getUser().getName());
         viewHolder.tvBody.setText(tweet.getBody());
+        new PatternEditableBuilder().addPattern(Pattern.compile("\\@(\\w+)"), Color.BLUE,
+                new PatternEditableBuilder.SpannableClickedListener(){
+                    @Override
+                    public void onSpanClicked(String text) {
+                        //  Click Action
+                        Toast.makeText(getContext(), "Clicked username: " + text,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }).into(viewHolder.tvBody);
         viewHolder.tvTimeStamp.setText(tweet.getCreateAt());
         Glide.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(viewHolder.ivProfileImage);
         viewHolder.ivProfileImage.setOnClickListener(new View.OnClickListener() {
