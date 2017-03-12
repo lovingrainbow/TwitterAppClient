@@ -6,8 +6,10 @@ import org.scribe.builder.api.TwitterApi;
 
 import android.content.Context;
 
+import com.codepath.apps.restclienttemplate.models.User;
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 /*
@@ -50,6 +52,26 @@ public class TwitterClient extends OAuthBaseClient {
 		}
 		getClient().get(apiUrl, params, handler);
 	}
+	public void getMentionsTimeline(Long max_id, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+        RequestParams params = new RequestParams();
+        params.put("count", 25);
+        if (max_id != null){
+            params.put("max_id", max_id);
+        }
+        getClient().get(apiUrl, params, handler);
+	}
+    public void getUserTimeline(Long max_id, User user, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("statuses/user_timeline.json");
+        RequestParams params = new RequestParams();
+        params.put("count", 25);
+        params.put("screen_name", user.getScreenName());
+        if (max_id != null){
+            params.put("max_id", max_id);
+        }
+        getClient().get(apiUrl, params, handler);
+    }
+
 	public void getRefreshTimeline(Long since_id, AsyncHttpResponseHandler handler){
 		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		RequestParams params = new RequestParams();
@@ -82,5 +104,23 @@ public class TwitterClient extends OAuthBaseClient {
 		params.put("status", body);
 		getClient().post(apiUrl, params, handler);
 	}
+
+	public void like(Long id, AsyncHttpResponseHandler handler){
+		String apiUrl = getApiUrl("favorites/create.json");
+		RequestParams params = new RequestParams();
+		params.put("id", id);
+		getClient().post(apiUrl, params, handler);
+	}
+	public void unlike(Long id, AsyncHttpResponseHandler handler){
+		String apiUrl = getApiUrl("favorites/destroy.json");
+		RequestParams params = new RequestParams();
+		params.put("id", id);
+		getClient().post(apiUrl, params, handler);
+	}
+	public void retweet(Long id, AsyncHttpResponseHandler handler){
+		String apiUrl = getApiUrl("statuses/retweet/" + id + ".json");
+		getClient().post(apiUrl, handler);
+	}
+
 
 }

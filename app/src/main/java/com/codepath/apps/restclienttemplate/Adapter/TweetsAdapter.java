@@ -1,30 +1,32 @@
 package com.codepath.apps.restclienttemplate.Adapter;
 
 import android.content.Context;
+
+import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+
+import com.codepath.apps.restclienttemplate.Activity.ProfileActivity;
+import com.codepath.apps.restclienttemplate.PatternEditableBuilder;
 import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.models.Tweet;
-import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.regex.Pattern;
 
-import static android.R.attr.resource;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
-
-/**
- * Created by Quietus on 2017/3/4.
- */
 
 public class TweetsAdapter extends ArrayAdapter<Tweet> {
     public TweetsAdapter(Context context, ArrayList<Tweet> objects) {
@@ -34,7 +36,7 @@ public class TweetsAdapter extends ArrayAdapter<Tweet> {
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Tweet tweet = getItem(position);
+        final Tweet tweet = getItem(position);
         ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
@@ -50,9 +52,26 @@ public class TweetsAdapter extends ArrayAdapter<Tweet> {
         }
         viewHolder.tvUserName.setText(tweet.getUser().getName());
         viewHolder.tvBody.setText(tweet.getBody());
+        new PatternEditableBuilder().addPattern(Pattern.compile("\\@(\\w+)"), Color.BLUE,
+                new PatternEditableBuilder.SpannableClickedListener(){
+                    @Override
+                    public void onSpanClicked(String text) {
+                        //  Click Action
+                        Toast.makeText(getContext(), "Clicked username: " + text,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }).into(viewHolder.tvBody);
         viewHolder.tvTimeStamp.setText(tweet.getCreateAt());
         Glide.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(viewHolder.ivProfileImage);
-
+        viewHolder.ivProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("DEBUG", tweet.getUser().toString());
+                Intent intent = new Intent(getContext(), ProfileActivity.class);
+                intent.putExtra("user", Parcels.wrap(tweet.getUser()));
+                v.getContext().startActivity(intent);
+            }
+        });
         return convertView;
     }
 
@@ -62,6 +81,4 @@ public class TweetsAdapter extends ArrayAdapter<Tweet> {
         TextView tvBody;
         TextView tvTimeStamp;
     }
-
-
 }

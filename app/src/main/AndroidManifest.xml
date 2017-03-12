@@ -5,6 +5,7 @@
     android:versionName="1.0">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -35,7 +36,8 @@
         </activity>
         <activity android:name=".Activity.TweetsActivity" />
         <activity android:name=".Activity.ComposeActivity" />
-        <activity android:name=".Activity.detailActivity"></activity>
+        <activity android:name=".Activity.detailActivity" />
+        <activity android:name=".Activity.ProfileActivity"></activity>
     </application>
 
 </manifest>
