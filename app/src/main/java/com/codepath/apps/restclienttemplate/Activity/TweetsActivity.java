@@ -1,22 +1,22 @@
 package com.codepath.apps.restclienttemplate.Activity;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
-
 import com.codepath.apps.restclienttemplate.Adapter.SmartFragmentStatePagerAdapter;
 import com.codepath.apps.restclienttemplate.R;
-
 import com.codepath.apps.restclienttemplate.TwitterApplication;
 import com.codepath.apps.restclienttemplate.TwitterClient;
 import com.codepath.apps.restclienttemplate.fragments.HomeTimelineFragment;
@@ -27,6 +27,8 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 import org.parceler.Parcels;
+
+import java.io.IOException;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -60,15 +62,20 @@ public class TweetsActivity extends AppCompatActivity {
     }
 
     private void setView(){
-        // init client
-        client = TwitterApplication.getRestClient();    //singleton client
-        // get myprofile
-        client.getAccountVerifyCredentials(new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                myProfile = User.fromJSON(response);
-            }
-        });
+        if (!isNetworkAvailable() || !isOnline()){
+            Toast.makeText(this, "Network not available", Toast.LENGTH_SHORT).show();
+        }else{
+            // init client
+            client = TwitterApplication.getRestClient();    //singleton client
+            // get myprofile
+            client.getAccountVerifyCredentials(new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    myProfile = User.fromJSON(response);
+                }
+            });
+        }
+
 
 
 
@@ -76,10 +83,7 @@ public class TweetsActivity extends AppCompatActivity {
 //        tweetsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(TweetsActivity.this, detailActivity.class);
-//                tweets = tweetsAdapter.getItem(position);
-//                intent.putExtra("tweet", Parcels.wrap(tweets));
-//                startActivity(intent);
+
 //            }
 //        });
 //
@@ -184,6 +188,23 @@ public class TweetsActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+    public boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+        return false;
     }
 }
 

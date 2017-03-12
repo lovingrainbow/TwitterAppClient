@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate.fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -10,13 +11,19 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 
+import com.codepath.apps.restclienttemplate.Activity.TweetsActivity;
+import com.codepath.apps.restclienttemplate.Activity.detailActivity;
 import com.codepath.apps.restclienttemplate.Adapter.TweetsAdapter;
 import com.codepath.apps.restclienttemplate.EndlessScrollListener;
 import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.codepath.apps.restclienttemplate.R.menu.tweets;
 
 
 public abstract class TweetsListFragment extends android.support.v4.app.Fragment {
@@ -53,11 +60,22 @@ public abstract class TweetsListFragment extends android.support.v4.app.Fragment
             }
         });
 
+        //  item select listener
+        tweetsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getContext(), detailActivity.class);
+                intent.putExtra("tweet", Parcels.wrap(tweetsAdapter.getItem(position)));
+                startActivity(intent);
+            }
+        });
+
 
         return v;
     }
 
     protected abstract void populateTimeline(long maxId);
+
 
     //  creation lifecycle event
 
